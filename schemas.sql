@@ -21,6 +21,9 @@ CREATE TABLE messaging.chat_members (
     joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (chat_id, user_id)
 );
+-- For querying all chats for a user
+-- No need index for chat_id since left most column in a composite key is auto indexed
+CREATE INDEX idx_chat_members_user ON messaging.chat_members(user_id);
 
 CREATE TABLE messaging.messages (
     id UUID PRIMARY KEY,
@@ -29,6 +32,4 @@ CREATE TABLE messaging.messages (
     content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
-
-
-CREATE INDEX idx_messages_chat ON messaging.messages(chat_id, created_at DESC);
+CREATE INDEX idx_messages_chat ON messaging.messages(chat_id, created_at DESC); -- For querying last messages of a chat

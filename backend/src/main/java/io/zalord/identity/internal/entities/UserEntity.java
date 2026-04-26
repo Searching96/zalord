@@ -1,22 +1,17 @@
-package io.zalord.identity.internal;
+package io.zalord.identity.internal.entities;
+
+import java.util.UUID;
 
 import jakarta.persistence.*;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AccessLevel;
-
-import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users", schema = "identity")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UserEntity {
-
-    @Id
-    private UUID id;
+public class UserEntity extends BaseEntity {
 
     @Column(name = "phone_number", unique = true, nullable = false, length = 20)
     private String phoneNumber;
@@ -24,11 +19,8 @@ public class UserEntity {
     @Column(name = "display_name", nullable = false, length = 100)
     private String displayName;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Instant createdAt;
-
     public UserEntity(UUID id, String phoneNumber, String displayName) {
-        this.id = id;
+        super(id);
         this.phoneNumber = phoneNumber;
         this.displayName = displayName;
     }
