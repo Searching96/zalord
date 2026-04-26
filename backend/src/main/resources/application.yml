@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/zalord
+    username: postgres
+    password: your_local_password
+  jpa:
+    hibernate:
+      # DO NOT let Hibernate create tables. We manage them via our SQL scripts.
+      ddl-auto: validate
+    show-sql: true
