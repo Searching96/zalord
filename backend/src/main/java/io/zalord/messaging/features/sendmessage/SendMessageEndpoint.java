@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/chats")
 public class SendMessageEndpoint {
-    private final SendMessageUseCase sendMessageUseCase;
+    private final SendMessageUseCase useCase;
 
-    public SendMessageEndpoint(SendMessageUseCase sendMessageUseCase) {
-        this.sendMessageUseCase = sendMessageUseCase;
+    public SendMessageEndpoint(SendMessageUseCase useCase) {
+        this.useCase = useCase;
     }
 
     // Input DTO
@@ -25,7 +25,7 @@ public class SendMessageEndpoint {
     public ResponseEntity<?> sendMessage(@PathVariable UUID chatId,
                                          @RequestBody SendMessageRequest request) {
         try {
-            MessageEntity savedMessage = sendMessageUseCase.execute(
+            MessageEntity savedMessage = useCase.execute(
                 chatId, 
                 request.senderId(), 
                 request.content()

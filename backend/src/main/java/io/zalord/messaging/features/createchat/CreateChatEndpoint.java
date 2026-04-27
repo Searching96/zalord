@@ -15,10 +15,10 @@ import io.zalord.messaging.internal.entities.ChatEntity;
 @RequestMapping("/chats")
 public class CreateChatEndpoint {
     
-    private final CreateChatUseCase createChatUseCase;
+    private final CreateChatUseCase useCase;
 
-    CreateChatEndpoint(CreateChatUseCase createChatUseCase) {
-        this.createChatUseCase = createChatUseCase;
+    CreateChatEndpoint(CreateChatUseCase useCase) {
+        this.useCase = useCase;
     }
 
     public record CreateChatRequest(List<UUID> participantIds) {}
@@ -27,7 +27,7 @@ public class CreateChatEndpoint {
     @PostMapping
     public ResponseEntity<?> createChat(@RequestBody CreateChatRequest request) {
         try {
-            ChatEntity chat = createChatUseCase.execute(request.participantIds());
+            ChatEntity chat = useCase.execute(request.participantIds());
             return ResponseEntity.ok(new CreateChatResponse(chat.getId(), chat.getType()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

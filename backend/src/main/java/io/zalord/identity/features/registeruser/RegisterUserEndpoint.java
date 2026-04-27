@@ -13,10 +13,10 @@ import io.zalord.identity.internal.entities.UserEntity;
 @RestController
 @RequestMapping("/users")
 public class RegisterUserEndpoint {
-    final private RegisterUserUseCase registerUserUseCase;
+    final private RegisterUserUseCase useCase;
 
-    public RegisterUserEndpoint(RegisterUserUseCase registerUserUseCase) {
-        this.registerUserUseCase = registerUserUseCase;
+    public RegisterUserEndpoint(RegisterUserUseCase useCase) {
+        this.useCase = useCase;
     }
 
     public record RegisterRequest(String phoneNumber, String displayName) {}
@@ -25,7 +25,7 @@ public class RegisterUserEndpoint {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            UserEntity user = registerUserUseCase.execute(request.phoneNumber(), request.displayName());
+            UserEntity user = useCase.execute(request.phoneNumber(), request.displayName());
             return ResponseEntity.ok(new RegisterResponse(user.getId(), user.getDisplayName()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
