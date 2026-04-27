@@ -3,6 +3,8 @@ package io.zalord.messaging.internal.entities;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
@@ -18,7 +20,8 @@ abstract class BaseEntity { // Package-private: hidden from Identity module
     @Id
     private UUID id;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
     protected BaseEntity(UUID id) {

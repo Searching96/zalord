@@ -35,8 +35,8 @@ public class GetChatHistoryEndpoint {
             // Map the DB entities to response DTO
             List<MessageHistoryResponse> response = messages.stream()
                 .map(m -> new MessageHistoryResponse(
-                    m.getId(), 
-                    m.getSenderId(), 
+                    m.getId(),
+                    m.getSenderId(),
                     m.getContent(),
                     m.getCreatedAt()
                 ))
