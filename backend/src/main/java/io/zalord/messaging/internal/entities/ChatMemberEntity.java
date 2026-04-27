@@ -1,6 +1,7 @@
 package io.zalord.messaging.internal.entities;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -21,4 +22,8 @@ public class ChatMemberEntity {
 
     @Column(name = "joined_at", insertable = false, updatable = false)
     private Instant joinedAt;
+
+    public ChatMemberEntity(UUID chatId, UUID userId) {
+        this.id = new ChatMemberId(chatId, userId);
+    }
 }
