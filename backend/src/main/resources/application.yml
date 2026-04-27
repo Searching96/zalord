@@ -2,11 +2,12 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/zalord
     username: postgres
-    password: your_local_password
+    password: user
   jpa:
     hibernate:
-      # DO NOT let Hibernate create tables. We manage them via our SQL scripts.
-      ddl-auto: validate
+      # This must be 'update' instead of 'validate' so Hibernate can build the event table 
+      # for modolith checker automatically
+      ddl-auto: update
     show-sql: true
 
 server:

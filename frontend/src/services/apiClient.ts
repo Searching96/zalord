@@ -1,22 +1,40 @@
-import { RegisterRequest, RegisterResponse } from "@/types/api";
+import { CreateChatRequest, CreateChatResponse, MessageHistoryResponse, RegisterRequest, RegisterResponse, SendMessageRequest, SendMessageResponse } from "@/types/api";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
+async function fetchClient<T>(endpoint: string, method: string = "GET", body?: any): Promise<T> {
+  const options: RequestInit = {
+    method,
+    headers: { "Content-Type": "application/json" },
+  };
+
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(`${BASE_URL}${endpoint}`, options);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `API request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
 export const identityApi = {
-  register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await fetch(`${BASE_URL}/users/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
+  register: (data: RegisterRequest) => 
+    fetchClient<RegisterResponse>("/users/register", "POST", data),
+};
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || "Failed to register");
-    }
+export const messagingApi = {
+  createChat: (data: CreateChatRequest) => 
+    fetchClient<CreateChatResponse>("/chats", "POST", data),
 
-    return response.json();
-  },
+  sendMessage: (chatId: string, data: SendMessageRequest) => 
+    fetchClient<SendMessageResponse>(`/chats/${chatId}/messages`, "POST", data),
+
+  // Notice that userId is passed as a query parameter (?userId=...) just like the backend design
+  getHistory: (chatId: string, userId: string) => 
+    fetchClient<MessageHistoryResponse[]>(`/chats/${chatId}/messages?userId=${userId}`, "GET"),
 };
