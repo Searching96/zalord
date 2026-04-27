@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.zalord.messaging.internal.entities.ChatEntity;
 
 @RestController
-@RequestMapping("/api/v1/chats")
+@RequestMapping("/chats")
 public class CreateChatEndpoint {
     
     private final CreateChatUseCase createChatUseCase;

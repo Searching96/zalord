@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.zalord.identity.internal.entities.UserEntity;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 public class RegisterUserEndpoint {
     final private RegisterUserUseCase registerUserUseCase;
 
