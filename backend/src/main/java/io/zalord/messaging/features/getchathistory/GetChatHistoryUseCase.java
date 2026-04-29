@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
 import io.zalord.messaging.internal.repositories.MessageRepository;
@@ -21,6 +22,7 @@ public class GetChatHistoryUseCase {
         this.chatMemberRepository = chatMemberRepository;
     }
 
+    @Transactional(readOnly = true)
     public List<MessageHistoryView> execute(UUID chatId, UUID requestingUserId) {
         // Check if the user requesting this history actually a member of the chat
         if (!chatMemberRepository.existsById_ChatIdAndId_UserId(chatId, requestingUserId)) {

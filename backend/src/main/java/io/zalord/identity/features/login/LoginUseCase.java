@@ -1,10 +1,10 @@
 package io.zalord.identity.features.login;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.zalord.identity.internal.repositories.UserRepository;
 import io.zalord.identity.internal.repositories.UserRepository.LoginView;
-import jakarta.transaction.Transactional;
 
 @Service
 public class LoginUseCase {
@@ -15,7 +15,7 @@ public class LoginUseCase {
         this.userRepository = userRepository;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LoginView execute(String phoneNumber) {
         
         LoginView user = userRepository.findLoginViewByPhoneNumber(phoneNumber)
