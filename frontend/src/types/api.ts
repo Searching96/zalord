@@ -25,7 +25,7 @@ export interface SendMessageRequest {
 }
 
 export interface SendMessageResponse {
-  messageId: string;
+  id: string;
   chatId: string;
   senderId: string;
   content: string;
@@ -36,4 +36,9 @@ export interface MessageHistoryResponse {
   senderId: string;
   content: string;
   createdAt: string;
+}
+
+export interface GetUserChatsResponse {
+  chatId: string;
+  chatName: string;
 }

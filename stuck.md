@@ -11,4 +11,4 @@
         1. Result: In UseCase layer, it returns the data that we want to return to the client
         2. Response: Do the record mapping by giving the response entity named key, like {'chatId': uuid} instead of {uuid}. This approach gives better maintainability. Response is usually the same with Result if there is one.
         3. Request: Uses to map HTTP request body, only exists if the request has a request body (not the Path param or Query param).
-        4. View: The data retrieved from DB with specified fields, some of these fields may return as a part of Result, and some are only used for calculations while not returning as Result.
+        4. View: The data retrieved from DB with specified fields, some of these fields may return as a part of Result, and some are only used for calculations while not returning as Result. The retrieval of View is called Project and can be done via JPQL.

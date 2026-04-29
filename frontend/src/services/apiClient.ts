@@ -1,4 +1,4 @@
-import { CreateChatRequest, CreateChatResponse, MessageHistoryResponse, RegisterRequest, RegisterResponse, SendMessageRequest, SendMessageResponse } from "@/types/api";
+import { CreateChatRequest, CreateChatResponse, GetUserChatsResponse, MessageHistoryResponse, RegisterRequest, RegisterResponse, SendMessageRequest, SendMessageResponse } from "@/types/api";
 
 const BASE_URL = "http://localhost:8080/api/v1";
 
@@ -27,6 +27,11 @@ export const identityApi = {
     fetchClient<RegisterResponse>("/users/register", "POST", data),
 };
 
+export const authApi = {
+  login: (data: { phoneNumber: string }) => 
+    fetchClient<RegisterResponse>("/users/login", "POST", data),
+};
+
 export const messagingApi = {
   createChat: (data: CreateChatRequest) => 
     fetchClient<CreateChatResponse>("/chats", "POST", data),
@@ -37,4 +42,7 @@ export const messagingApi = {
   // Notice that userId is passed as a query parameter (?userId=...) just like the backend design
   getHistory: (chatId: string, userId: string) => 
     fetchClient<MessageHistoryResponse[]>(`/chats/${chatId}/messages?userId=${userId}`, "GET"),
+
+  getUserChats: (userId: string) =>
+    fetchClient<GetUserChatsResponse[]>(`/users/${userId}/chats`, "GET"),
 };
