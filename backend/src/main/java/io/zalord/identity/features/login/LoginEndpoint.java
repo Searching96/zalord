@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.zalord.identity.internal.entities.UserEntity;
+import io.zalord.identity.internal.repositories.UserRepository.LoginView;
 
 @RestController
 @RequestMapping("/users")
@@ -27,7 +27,7 @@ public class LoginEndpoint {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            UserEntity user = useCase.execute(request.phoneNumber());
+            LoginView user = useCase.execute(request.phoneNumber());
             LoginResponse response = new LoginResponse(user.getId(), user.getDisplayName());
 
             return ResponseEntity.ok(response);

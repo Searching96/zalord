@@ -1,6 +1,6 @@
 package io.zalord.messaging.features.getchathistory;
 
-import io.zalord.messaging.internal.entities.MessageEntity;
+import io.zalord.messaging.internal.repositories.MessageRepository.MessageHistoryView;
 
 import java.time.Instant;
 import java.util.List;
@@ -30,9 +30,9 @@ public class GetChatHistoryEndpoint {
     public ResponseEntity<?> getHistory(@PathVariable UUID chatId, @RequestParam UUID userId) {
 
         try {
-            List<MessageEntity> messages = useCase.execute(chatId, userId);
+            List<MessageHistoryView> messages = useCase.execute(chatId, userId);
 
-            // Map the DB entities to response DTO
+            // Map the projection to response DTO
             List<MessageHistoryResponse> response = messages.stream()
                 .map(m -> new MessageHistoryResponse(
                     m.getId(),

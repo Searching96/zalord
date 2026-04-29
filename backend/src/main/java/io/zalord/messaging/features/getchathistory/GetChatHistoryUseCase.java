@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import io.zalord.messaging.internal.entities.MessageEntity;
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
 import io.zalord.messaging.internal.repositories.MessageRepository;
+import io.zalord.messaging.internal.repositories.MessageRepository.MessageHistoryView;
 
 @Service
 public class GetChatHistoryUseCase {
@@ -21,12 +21,12 @@ public class GetChatHistoryUseCase {
         this.chatMemberRepository = chatMemberRepository;
     }
 
-    public List<MessageEntity> execute(UUID chatId, UUID requestingUserId) {
+    public List<MessageHistoryView> execute(UUID chatId, UUID requestingUserId) {
         // Check if the user requesting this history actually a member of the chat
         if (!chatMemberRepository.existsById_ChatIdAndId_UserId(chatId, requestingUserId)) {
             throw new IllegalArgumentException("Access Denied: User is not a member of this chat.");
         }
 
-        return messageRepository.findByChatIdOrderByCreatedAtAsc(chatId);
+        return messageRepository.findHistoryByChatId(chatId);
     }
 }
