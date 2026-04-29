@@ -1,0 +1,3 @@
+1. WebSocket did not initiated:
+    - Cause: Spring Boot config yml has 'context-path: /api/v1', which means all API calls to this backend must have a '/api/v1' after the domain name and before the URI, yet frontend set the URL to 'http://domain_name/ws'. Besides, STOMP do no show any error log even though we have manual try catch implemented.
+    - Solution: Find out that there is a 'debug' properties in STOMP ws, so I enabled it and found out the URL is mismatched.
