@@ -17,6 +17,8 @@ class ZalordApplicationTests {
 	@Test
 	void writeDocumentationSnippets() {
 		// This generates UML diagrams of all bounded contexts automatically
-		new Documenter(modules).writeModulesAsPlantUml();
+		new Documenter(modules)
+			.writeModulesAsPlantUml()
+			.writeIndividualModulesAsPlantUml();
 	}
 }
