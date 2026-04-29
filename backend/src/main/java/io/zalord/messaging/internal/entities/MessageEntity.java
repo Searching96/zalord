@@ -2,7 +2,9 @@ package io.zalord.messaging.internal.entities;
 
 import java.util.UUID;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

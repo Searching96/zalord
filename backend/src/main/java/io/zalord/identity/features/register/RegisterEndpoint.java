@@ -1,4 +1,4 @@
-package io.zalord.identity.features.registeruser;
+package io.zalord.identity.features.register;
 
 import java.util.UUID;
 
@@ -12,10 +12,10 @@ import io.zalord.identity.internal.entities.UserEntity;
 
 @RestController
 @RequestMapping("/users")
-public class RegisterUserEndpoint {
-    final private RegisterUserUseCase useCase;
+public class RegisterEndpoint {
+    final private RegisterUseCase useCase;
 
-    public RegisterUserEndpoint(RegisterUserUseCase useCase) {
+    public RegisterEndpoint(RegisterUseCase useCase) {
         this.useCase = useCase;
     }
 

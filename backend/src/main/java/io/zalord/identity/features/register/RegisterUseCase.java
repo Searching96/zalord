@@ -1,4 +1,4 @@
-package io.zalord.identity.features.registeruser;
+package io.zalord.identity.features.register;
 
 import java.util.UUID;
 
@@ -9,10 +9,10 @@ import io.zalord.identity.internal.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 
 @Service
-public class RegisterUserUseCase {
+public class RegisterUseCase {
     private final UserRepository userRepository;
 
-    public RegisterUserUseCase(UserRepository userRepository) {
+    public RegisterUseCase(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
