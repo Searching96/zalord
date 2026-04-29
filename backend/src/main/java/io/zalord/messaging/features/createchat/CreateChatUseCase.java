@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import io.zalord.identity.IdentityAPI;
+import io.zalord.identity.IdentityApi;
 import io.zalord.messaging.internal.entities.ChatEntity;
 import io.zalord.messaging.internal.entities.ChatMemberEntity;
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
@@ -16,11 +16,11 @@ public class CreateChatUseCase {
     
     private final ChatRepository chatRepository;
     private final ChatMemberRepository chatMemberRepository;
-    private final IdentityAPI identityAPI;
+    private final IdentityApi identityAPI;
 
     public CreateChatUseCase(ChatRepository chatRepository,
                              ChatMemberRepository chatMemberRepository,
-                             IdentityAPI identityAPI) {
+                             IdentityApi identityAPI) {
         this.chatRepository = chatRepository;
         this.chatMemberRepository = chatMemberRepository;
         this.identityAPI = identityAPI;

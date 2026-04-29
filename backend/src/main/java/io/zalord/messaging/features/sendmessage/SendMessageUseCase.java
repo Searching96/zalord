@@ -1,6 +1,6 @@
 package io.zalord.messaging.features.sendmessage;
 
-import io.zalord.identity.IdentityAPI;
+import io.zalord.identity.IdentityApi;
 import io.zalord.messaging.features.sendmessage.SendMessageEndpoint.SendMessageResponse;
 import io.zalord.messaging.internal.entities.MessageEntity;
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
@@ -16,16 +16,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class SendMessageUseCase {
 
-    private final IdentityAPI identityAPI;
+    private final IdentityApi identityApi;
     private final ChatMemberRepository chatMemberRepository;
     private final MessageRepository messageRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public SendMessageUseCase(IdentityAPI identityAPI,
+    public SendMessageUseCase(IdentityApi identityApi,
                               ChatMemberRepository chatMemberRepository,
                               MessageRepository messageRepository,
                               SimpMessagingTemplate messagingTemplate) {
-        this.identityAPI = identityAPI;
+        this.identityApi = identityApi;
         this.chatMemberRepository = chatMemberRepository;
         this.messageRepository = messageRepository;
         this.messagingTemplate = messagingTemplate;
@@ -35,7 +35,7 @@ public class SendMessageUseCase {
     public SendMessageResponse execute(UUID chatId, UUID senderId, String content) {
 
         // 1. Cross-module call: Does this user even exist in the Identity system?
-        if (!identityAPI.userExists(senderId)) {
+        if (!identityApi.userExists(senderId)) {
             throw new IllegalArgumentException("User does not exists.");
         }
 

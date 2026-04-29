@@ -19,14 +19,14 @@ public class GetUserChatsEndpoint {
         this.useCase = useCase;
     }
 
-    public record GetUserChatsResponse(UUID chatId) {}
+    public record GetUserChatsResponse(UUID chatId, String chatName) {}
 
     @GetMapping("/{userId}/chats")
     public ResponseEntity<List<GetUserChatsResponse>> getUserChats(@PathVariable UUID userId) {
         
         List<GetUserChatsResponse> response = useCase.execute(userId)
             .stream()
-            .map(id -> new GetUserChatsResponse(id))
+            .map(result -> new GetUserChatsResponse(result.chatId(), result.chatName()))
             .toList();
 
         return ResponseEntity.ok(response);
