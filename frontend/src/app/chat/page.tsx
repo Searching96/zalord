@@ -1,6 +1,6 @@
 "use client";
 
-import { messagingApi } from "@/services/apiClient";
+import { identityApi, messagingApi } from "@/services/apiClient";
 import { MessageHistoryResponse, GetUserChatsResponse } from "@/types/api";
 import { Client } from "@stomp/stompjs";
 import { useEffect, useState } from "react";
@@ -24,6 +24,10 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<MessageHistoryResponse[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [error, setError] = useState("");
+
+  const [searchPhone, setSearchPhone] = useState("");
+  const [searchError, setSearchError] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   // 1. Initial Load: Check Auth and Fetch Chat List
   useEffect(() => {
@@ -105,6 +109,75 @@ export default function ChatPage() {
     router.push("/");
   };
 
+  const handleSearchAndChat = async () => {
+    // Guard against empty inputs AND double-enters, this looks like duplicate code becau-
+    // se we disabled the Search button when isSearching is true, but it's critical to pr-
+    // event the "Keystroke Trap" where a user could accidentally trigger multiple reques-
+    // ts by hitting Enter repeatedly. By checking both conditions at the start, we ensur-
+    // e that only valid and intentional searches proceed.
+    if (!searchPhone.trim() || isSearching) return;
+    
+    setSearchError("");
+    setIsSearching(true);
+
+    try {
+      // --- CRITICAL PATH ---
+      // If either of these fail, we completely abort.
+      const targetUser = await identityApi.searchByPhone(searchPhone);
+      let existingChatId: string | null = null;
+
+      try {
+        const existingChat = await messagingApi.findDmChat(userId, targetUser.id);
+        existingChatId = existingChat.chatId;
+      } catch (err: any) {
+        if (err.status !== 404) {
+          throw err;
+        }
+      }
+
+      if (existingChatId) {
+        setSearchPhone("");
+        await handleConnect(existingChatId);
+
+        try {
+          const updatedChats = await messagingApi.getUserChats(userId);
+          setChatList(updatedChats);
+        } catch (sidebarErr) {
+          console.warn("Chat connected, but sidebar failed to refresh in the background.", sidebarErr);
+        }
+
+        return;
+      }
+
+      // No existing chat found, create a new one
+      const chatResponse = await messagingApi.createChat({
+        participantIds: [userId, targetUser.id]
+      });
+
+      // --- SUCCESS ---
+      // The backend confirmed the chat exists. We connect immediately.
+      setSearchPhone("");
+      handleConnect(chatResponse.chatId);
+      
+      // --- NON-CRITICAL PATH ---
+      // We wrap the sidebar refresh in its own try/catch. 
+      // If this fails, the user can still chat! We just log it silently 
+      // or show a tiny non-intrusive warning, rather than a total failure.
+      try {
+        const refreshedChats = await messagingApi.getUserChats(userId);
+        setChatList(refreshedChats);
+      } catch (sidebarErr) {
+        console.warn("Chat connected, but sidebar failed to refresh in the background.", sidebarErr);
+      }
+
+    } catch (err: any) {
+      // This catch only triggers if the user wasn't found or the chat couldn't be created.
+      setSearchError(err.message || "An unexpected error occurred while searching.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-100 font-sans text-black">
       
@@ -122,24 +195,36 @@ export default function ChatPage() {
           </button>
         </div>
 
-        {/* Manual Connect (Preserved Logic) */}
+        {/* Search & Start Chat */}
         <div className="p-4 border-b border-gray-700 bg-gray-800">
-          <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Join Room via ID</label>
+          <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wider">
+            Find User by Phone
+          </label>
           <div className="flex gap-2">
             <input 
               type="text" 
-              value={chatIdInput} 
-              onChange={e => setChatIdInput(e.target.value)}
-              className="flex-1 p-2 bg-gray-700 rounded text-sm outline-none focus:ring-1 focus:ring-blue-500" 
-              placeholder="Paste UUID..."
+              value={searchPhone} 
+              onChange={e => {
+                setSearchPhone(e.target.value);
+                setSearchError(""); // Clear error when they start typing
+              }}
+              className="flex-1 p-2 bg-gray-700 rounded text-sm outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-500" 
+              placeholder="e.g., +84123456789"
+              onKeyDown={(e) => e.key === 'Enter' && handleSearchAndChat()}
             />
             <button 
-              onClick={() => handleConnect(chatIdInput)} 
-              className="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded text-sm font-semibold transition"
+              onClick={handleSearchAndChat} 
+              disabled={isSearching || !searchPhone.trim()}
+              className="bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded text-sm font-semibold transition disabled:opacity-50"
             >
-              Go
+              {isSearching ? "..." : "Chat"}
             </button>
           </div>
+          {searchError && (
+            <p className="text-red-400 text-xs mt-2 animate-fade-in">
+              {searchError}
+            </p>
+          )}
         </div>
 
         {/* Chat List */}

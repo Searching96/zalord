@@ -1,6 +1,16 @@
-import { CreateChatRequest, CreateChatResponse, GetUserChatsResponse, MessageHistoryResponse, RegisterRequest, RegisterResponse, SendMessageRequest, SendMessageResponse } from "@/types/api";
+import { CreateChatRequest, CreateChatResponse, FindDmChatResponse, GetUserChatsResponse, MessageHistoryResponse, RegisterRequest, RegisterResponse, SearchUserResponse, SendMessageRequest, SendMessageResponse } from "@/types/api";
 
 const BASE_URL = "http://localhost:8080/api/v1";
+
+export class ApiError extends Error {
+  public status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
 
 async function fetchClient<T>(endpoint: string, method: string = "GET", body?: any): Promise<T> {
   const options: RequestInit = {
@@ -16,15 +26,24 @@ async function fetchClient<T>(endpoint: string, method: string = "GET", body?: a
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || `API request failed with status ${response.status}`);
+    throw new ApiError(errorText || `HTTP error! status: ${response.status}`, response.status);
   }
 
-  return response.json();
+  // Safely parse successful responses in case the backend may returns no content.
+  // e.g., 204 No Content.
+  const textResponse = await response.text();
+  
+  // If the backend sent a body, parse it. Otherwise, return an empty object to prevent c-
+  // rashes that may come from destructuring or other operations.
+  return textResponse ? JSON.parse(textResponse) : ({} as T);
 }
 
 export const identityApi = {
   register: (data: RegisterRequest) => 
     fetchClient<RegisterResponse>("/users/register", "POST", data),
+
+  searchByPhone: (phoneNumber: string) =>
+    fetchClient<SearchUserResponse>(`/users/search?phoneNumber=${encodeURIComponent(phoneNumber)}`, "GET"),
 };
 
 export const authApi = {
@@ -33,6 +52,9 @@ export const authApi = {
 };
 
 export const messagingApi = {
+  findDmChat: (userA: string, userB: string) =>
+    fetchClient<FindDmChatResponse>(`/chats/dm?userA=${userA}&userB=${userB}`, "GET"),
+
   createChat: (data: CreateChatRequest) => 
     fetchClient<CreateChatResponse>("/chats", "POST", data),
 

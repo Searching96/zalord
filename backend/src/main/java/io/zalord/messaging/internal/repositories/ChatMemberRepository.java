@@ -29,4 +29,22 @@ public interface ChatMemberRepository extends JpaRepository<ChatMemberEntity, Ch
         AND c.id.userId != :userId
     """)
     List<ChatPartnerView> findChatPartners(@Param("userId") UUID userId);
+
+    @Query("""
+        SELECT cm.id.chatId
+        FROM ChatMemberEntity cm
+        JOIN cm.chat c
+        WHERE c.type = :type
+            AND cm.id.chatId IN (
+                SELECT cm1.id.chatId FROM ChatMemberEntity cm1 WHERE cm1.id.userId = :userA
+            )
+            AND cm.id.chatId IN (
+                SELECT cm2.id.chatId FROM ChatMemberEntity cm2 WHERE cm2.id.userId = :userB
+            )
+        GROUP BY cm.id.chatId
+        HAVING COUNT(cm.id.userId) = 2
+    """)
+    List<UUID> findChatIdsByTypeAndParticipants(@Param("type") String type,
+                                                @Param("userA") UUID userA,
+                                                @Param("userB") UUID userB);
 }

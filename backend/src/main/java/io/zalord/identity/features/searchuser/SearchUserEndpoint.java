@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.zalord.identity.features.searchuser.SearchUserUseCase.SearchUserResult;
@@ -25,9 +25,9 @@ public class SearchUserEndpoint {
     public record SearchUserRequest(String phoneNumber) {}
     public record SearchUserResponse(UUID id, String displayName) {}
 
-    @PostMapping("/search")
-    public ResponseEntity<?> searchUser(@RequestBody SearchUserRequest request) {
-        SearchUserResult result = useCase.execute(request.phoneNumber());
+    @GetMapping("/search")
+    public ResponseEntity<SearchUserResponse> searchUser(@RequestParam String phoneNumber) {
+        SearchUserResult result = useCase.execute(phoneNumber);
         return ResponseEntity.ok(new SearchUserResponse(result.id(), result.displayName()));
     }
 

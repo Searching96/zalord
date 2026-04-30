@@ -19,6 +19,11 @@ export interface CreateChatResponse {
   type: string;
 }
 
+export interface FindDmChatResponse {
+  chatId: string;
+  type: string;
+}
+
 export interface SendMessageRequest {
   senderId: string;
   content: string;
@@ -41,4 +46,9 @@ export interface MessageHistoryResponse {
 export interface GetUserChatsResponse {
   chatId: string;
   chatName: string;
+}
+
+export interface SearchUserResponse {
+  id: string;
+  displayName: string;
 }
