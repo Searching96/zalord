@@ -19,7 +19,7 @@ public class LoginUseCase {
     public LoginView execute(String phoneNumber) {
         
         LoginView user = userRepository.findLoginViewByPhoneNumber(phoneNumber)
-            .orElseThrow(() -> new IllegalArgumentException("User not found. Please register first."));
+            .orElseThrow(UserNotFoundException::new);
 
         return user;
     }

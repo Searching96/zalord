@@ -19,7 +19,7 @@ public class RegisterUseCase {
     @Transactional
     public UserEntity execute(String phoneNumber, String displayName) {
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
-            throw new IllegalArgumentException("Phone number already exists.");
+            throw new PhoneNumberAlreadyExistsException(phoneNumber);
         }
         UserEntity user = new UserEntity(UUID.randomUUID(), phoneNumber, displayName);
         return userRepository.save(user);

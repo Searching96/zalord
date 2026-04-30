@@ -2,6 +2,8 @@ package io.zalord.messaging.features.sendmessage;
 
 import io.zalord.identity.IdentityApi;
 import io.zalord.messaging.features.sendmessage.SendMessageEndpoint.SendMessageResponse;
+import io.zalord.messaging.features.ChatAccessDeniedException;
+import io.zalord.messaging.features.MessagingUserNotFoundException;
 import io.zalord.messaging.internal.entities.MessageEntity;
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
 import io.zalord.messaging.internal.repositories.MessageRepository;
@@ -36,12 +38,12 @@ public class SendMessageUseCase {
 
         // 1. Cross-module call: Does this user even exist in the Identity system?
         if (!identityApi.userExists(senderId)) {
-            throw new IllegalArgumentException("User does not exists.");
+            throw new MessagingUserNotFoundException(senderId);
         }
 
         // 2. Authorization: Is the user actually a member of this chat room?
         if (!chatMemberRepository.existsById_ChatIdAndId_UserId(chatId, senderId)) {
-            throw new IllegalArgumentException("User is not a member of this chat.");
+            throw new ChatAccessDeniedException();
         }
 
         // 3. Create and save the message

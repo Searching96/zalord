@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import io.zalord.identity.IdentityApi;
+import io.zalord.messaging.features.MessagingUserNotFoundException;
 import io.zalord.messaging.internal.entities.ChatEntity;
 import io.zalord.messaging.internal.entities.ChatMemberEntity;
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
@@ -30,7 +31,7 @@ public class CreateChatUseCase {
         // 1. Validate all users exist
         for (UUID userId : participantsIds) {
             if (!identityAPI.userExists(userId)) {
-                throw new IllegalArgumentException("User " + userId + " does not exist.");
+                throw new MessagingUserNotFoundException(userId);
             }
         }
 

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.zalord.messaging.features.ChatAccessDeniedException;
 import io.zalord.messaging.internal.repositories.ChatMemberRepository;
 import io.zalord.messaging.internal.repositories.MessageRepository;
 import io.zalord.messaging.internal.repositories.MessageRepository.MessageHistoryView;
@@ -26,9 +27,9 @@ public class GetChatHistoryUseCase {
     public List<MessageHistoryView> execute(UUID chatId, UUID requestingUserId) {
         // Check if the user requesting this history actually a member of the chat
         if (!chatMemberRepository.existsById_ChatIdAndId_UserId(chatId, requestingUserId)) {
-            throw new IllegalArgumentException("Access Denied: User is not a member of this chat.");
+            throw new ChatAccessDeniedException();
         }
 
-        return messageRepository.findHistoryByChatId(chatId);
+        return messageRepository.findMessageHistoryByChatIdOrderByCreatedAtAsc(chatId);
     }
 }

@@ -2,7 +2,9 @@ package io.zalord.identity.features.register;
 
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,11 +26,14 @@ public class RegisterEndpoint {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        try {
-            UserEntity user = useCase.execute(request.phoneNumber(), request.displayName());
-            return ResponseEntity.ok(new RegisterResponse(user.getId(), user.getDisplayName()));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        UserEntity user = useCase.execute(request.phoneNumber(), request.displayName());
+        return ResponseEntity.ok(new RegisterResponse(user.getId(), user.getDisplayName()));
+    }
+
+    @ExceptionHandler(PhoneNumberAlreadyExistsException.class)
+    public ResponseEntity<String> handlePhoneNumberAlreadyExists(PhoneNumberAlreadyExistsException e) {
+        // When the UseCase throws this exception, Spring automatically calls this method
+        // instead of crashing or returning a 500 error.
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }

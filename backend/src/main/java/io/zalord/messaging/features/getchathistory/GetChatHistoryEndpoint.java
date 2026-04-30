@@ -8,12 +8,14 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.zalord.messaging.features.ChatAccessDeniedException;
 @RestController
 @RequestMapping("/chats")
 public class GetChatHistoryEndpoint {
@@ -28,23 +30,23 @@ public class GetChatHistoryEndpoint {
     
     @GetMapping("/{chatId}/messages")
     public ResponseEntity<?> getHistory(@PathVariable UUID chatId, @RequestParam UUID userId) {
+        List<MessageHistoryView> messages = useCase.execute(chatId, userId);
 
-        try {
-            List<MessageHistoryView> messages = useCase.execute(chatId, userId);
+        // Map the projection to response DTO
+        List<MessageHistoryResponse> response = messages.stream()
+            .map(m -> new MessageHistoryResponse(
+                m.getId(),
+                m.getSenderId(),
+                m.getContent(),
+                m.getCreatedAt()
+            ))
+            .toList();
+        
+        return ResponseEntity.ok(response);
+    }
 
-            // Map the projection to response DTO
-            List<MessageHistoryResponse> response = messages.stream()
-                .map(m -> new MessageHistoryResponse(
-                    m.getId(),
-                    m.getSenderId(),
-                    m.getContent(),
-                    m.getCreatedAt()
-                ))
-                .toList();
-            
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        }
+    @ExceptionHandler(ChatAccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDenied(ChatAccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 }
